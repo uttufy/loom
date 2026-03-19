@@ -1,0 +1,94 @@
+---
+title: Loom - AI Agent Orchestrator
+description: Intelligent task orchestration for AI coding agents
+---
+
+# Loom
+
+**"Beads are the task, Loom is what weaves them together"**
+
+Loom is an orchestration layer built on top of [Beads (bd)](https://github.com/uttufy/beads) that enhances AI coding agents with intelligent task prioritization, lifecycle hooks, multi-agent coordination, and learning capabilities.
+
+## Why Loom?
+
+AI coding agents face several challenges when working on long-horizon tasks:
+
+| Challenge | Loom Solution |
+|-----------|---------------|
+| **Context Loss** | Intelligent memory management with importance-weighted compaction |
+| **Poor Prioritization** | Smart scoring based on blocking impact, staleness, and failure history |
+| **Coordination Gaps** | File-level locking and conflict detection for multi-agent work |
+| **No Learning** | Retrospectives and pattern extraction for continuous improvement |
+| **Memory Pressure** | Context compaction that preserves critical information |
+
+## Key Features
+
+### Smart Prioritization
+
+Score tasks by downstream impact, staleness, and failure history:
+
+```
+Score = (blocking_count × 3) + (priority_boost × 2) + staleness_bonus - failure_penalty
+```
+
+### Lifecycle Hooks
+
+Inject context, validate commands, and auto-create follow-ups at key orchestration points:
+
+- `pre-prompt` - Inject context before prompt processing
+- `pre-tool-call` - Validate tool calls, block dangerous commands
+- `post-tool-call` - Truncate large outputs, attach snippets
+- `post-response` - Auto-create follow-up beads
+- `on-error` - Log failures, attempt recovery
+- `on-claim` - Run setup/linting on claim
+- `pre-close` - Verify tests pass before closing
+- `on-block` - Notify for reprioritization
+
+### Multi-Agent Coordination
+
+When multiple agents work on the same codebase:
+
+- File-level locking prevents conflicts
+- Automatic lock expiration
+- Conflict detection and reporting
+
+### Learning System
+
+Loom learns from each session:
+
+- Pattern extraction from successful strategies
+- Global knowledge sharing across projects
+- Failure history for better prioritization
+
+## Quick Start
+
+```bash
+# Install
+go install github.com/uttufy/loom/cmd/loom@latest
+
+# Initialize configuration
+loom config init
+
+# View prioritized ready tasks
+loom ready
+
+# Start the orchestration loop
+loom run
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Get Started" icon="rocket" href="/get-started/installation">
+    Install Loom and run your first orchestration
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/cli-reference/overview">
+    Explore all available commands
+  </Card>
+  <Card title="Configuration" icon="cog" href="/config-reference/overview">
+    Customize Loom for your workflow
+  </Card>
+  <Card title="Architecture" icon="sitemap" href="/architecture/overview">
+    Understand how Loom works under the hood
+  </Card>
+</CardGroup>

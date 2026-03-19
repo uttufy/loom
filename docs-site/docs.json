@@ -1,0 +1,88 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Loom",
+  "logo": {
+    "dark": "/img/logo-dark.svg",
+    "light": "/img/logo-light.svg"
+  },
+  "colors": {
+    "primary": "#7D56F4",
+    "light": "#9F7AEA",
+    "dark": "#6B46C1"
+  },
+  "topbarLinks": [
+    { "name": "GitHub", "url": "https://github.com/uttufy/loom" }
+  ],
+  "tabs": [
+    { "name": "Get Started", "url": "get-started" },
+    { "name": "CLI Reference", "url": "cli-reference" },
+    { "name": "Configuration", "url": "config-reference" },
+    { "name": "Guides", "url": "guides" }
+  ],
+  "navigation": [
+    { "group": "Introduction", "pages": ["index"] },
+    { "group": "Get Started", "pages": [
+      "get-started/installation",
+      "get-started/quick-start",
+      "get-started/configuration"
+    ]},
+    { "group": "CLI Reference", "pages": [
+      "cli-reference/overview",
+      { "group": "Core Commands", "pages": [
+        "cli-reference/run",
+        "cli-reference/ready",
+        "cli-reference/score",
+        "cli-reference/claim"
+      ]},
+      { "group": "Retro", "pages": [
+        "cli-reference/retro-list",
+        "cli-reference/retro-show",
+        "cli-reference/retro-create"
+      ]},
+      { "group": "Hooks", "pages": [
+        "cli-reference/hooks-list",
+        "cli-reference/hooks-test"
+      ]},
+      { "group": "Coordination", "pages": [
+        "cli-reference/locks",
+        "cli-reference/conflicts"
+      ]},
+      { "group": "Memory", "pages": [
+        "cli-reference/status",
+        "cli-reference/compact"
+      ]},
+      { "group": "Config", "pages": [
+        "cli-reference/config-init",
+        "cli-reference/config-show"
+      ]},
+      "cli-reference/patterns",
+      "cli-reference/mcp",
+      "cli-reference/docs",
+      "cli-reference/config-docs"
+    ]},
+    { "group": "Configuration Reference", "pages": [
+      "config-reference/overview",
+      "config-reference/beads",
+      "config-reference/scoring",
+      "config-reference/hooks",
+      "config-reference/safety",
+      "config-reference/memory",
+      "config-reference/coordination",
+      "config-reference/learning"
+    ]},
+    { "group": "Guides", "pages": [
+      "guides/hooks",
+      "guides/mcp-integration",
+      "guides/multi-agent"
+    ]},
+    { "group": "Architecture", "pages": [
+      "architecture/overview"
+    ]},
+    { "group": "API Reference", "pages": [
+      "api-reference/overview"
+    ]}
+  ],
+  "footerSocials": {
+    "github": "https://github.com/uttufy/loom"
+  }
+}

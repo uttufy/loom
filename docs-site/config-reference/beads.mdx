@@ -1,0 +1,23 @@
+---
+title: Beads Configuration
+description: Configure the Beads CLI integration for task management.
+---
+
+# Beads
+
+Configure the Beads CLI integration for task management.
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `path` | string | `bd` | Path to the Beads CLI executable |
+| `timeout` | duration | `30s` | Command timeout duration |
+
+## Example
+
+```yaml
+beads:
+  path: bd
+  timeout: 30s
+```

@@ -1,0 +1,86 @@
+---
+title: Installation
+description: Install Loom on your system
+---
+
+# Installation
+
+## Prerequisites
+
+Before installing Loom, ensure you have:
+
+- **Go 1.21+** - For building from source
+- **Beads (bd)** - Loom requires [Beads](https://github.com/uttufy/beads) for task management
+- **Git** - For version control operations
+
+## Install Beads
+
+Loom requires Beads (bd) to be installed first:
+
+```bash
+# Install Beads
+go install github.com/uttufy/beads/cmd/bd@latest
+
+# Verify installation
+bd version
+```
+
+Initialize Beads in your project:
+
+```bash
+cd your-project
+bd init
+```
+
+## Install Loom
+
+### From Source
+
+```bash
+# Clone the repository
+git clone https://github.com/uttufy/loom.git
+cd loom
+
+# Build
+go build ./cmd/loom
+
+# Move to PATH (optional)
+mv loom /usr/local/bin/
+```
+
+### Using Go Install
+
+```bash
+go install github.com/uttufy/loom/cmd/loom@latest
+```
+
+### Verify Installation
+
+```bash
+loom version
+```
+
+## Initialize Configuration
+
+Create a default configuration file:
+
+```bash
+# Initialize in current directory
+loom config init
+
+# Or specify a path
+loom config init --config /path/to/loom.yaml
+```
+
+This creates a `loom.yaml` file with sensible defaults.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="play" href="/get-started/quick-start">
+    Run your first orchestration
+  </Card>
+  <Card title="Configuration" icon="cog" href="/get-started/configuration">
+    Customize your setup
+  </Card>
+</CardGroup>

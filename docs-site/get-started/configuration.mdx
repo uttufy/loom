@@ -1,0 +1,176 @@
+---
+title: Configuration
+description: Configure Loom for your workflow
+---
+
+# Configuration
+
+Loom is configured via `loom.yaml` in your project directory.
+
+## Configuration File
+
+Run `loom config init` to create a default configuration:
+
+```yaml
+# Beads integration
+beads:
+  path: bd
+  timeout: 30s
+
+# Scoring weights
+scoring:
+  blocking_multiplier: 3
+  priority_boost: 2
+  staleness_days: 3
+  staleness_bonus: 1
+  failure_penalty: 1
+
+# Hook configuration
+hooks:
+  enabled: true
+  pre_prompt:
+    - name: inject-context
+      builtin: context-injector
+  pre_tool_call:
+    - name: safety-check
+      builtin: safety-guard
+  post_tool_call:
+    - name: truncate-output
+      builtin: output-truncator
+  post_response:
+    - name: create-followups
+      builtin: followup-creator
+  on_error:
+    - name: log-failure
+      builtin: error-logger
+
+# Safety configuration
+safety:
+  block_destructive: true
+  require_confirmation:
+    - git push
+    - npm publish
+    - docker push
+  allowed_without_confirmation:
+    - git status
+    - git diff
+    - cat
+    - ls
+
+# Memory management
+memory:
+  compact_threshold: 0.70
+  retention:
+    high_dependency: 90
+    failed_tasks: 80
+    retrospectives: 100
+
+# Coordination
+coordination:
+  enabled: true
+  lock_timeout: 1h
+  conflict_detection: true
+
+# Learning
+learning:
+  enabled: true
+  retro_count: 3
+  patterns_file: ~/.beads-global/patterns.json
+```
+
+## Configuration Sections
+
+### Beads
+
+Configure the Beads CLI integration:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `path` | string | `bd` | Path to the Beads CLI executable |
+| `timeout` | duration | `30s` | Command timeout duration |
+
+### Scoring
+
+Configure task prioritization weights:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `blocking_multiplier` | int | `3` | Multiplier for each blocked task |
+| `priority_boost` | int | `2` | Bonus for P0/P1 tasks |
+| `staleness_days` | int | `3` | Days before staleness bonus applies |
+| `staleness_bonus` | int | `1` | Bonus for stale tasks |
+| `failure_penalty` | int | `1` | Penalty for previously failed tasks |
+
+### Hooks
+
+Configure lifecycle hooks:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | bool | `true` | Enable/disable hook execution |
+| `pre_prompt` | []HookDef | - | Hooks before prompt processing |
+| `pre_tool_call` | []HookDef | - | Hooks before tool execution |
+| `post_tool_call` | []HookDef | - | Hooks after tool execution |
+| `post_response` | []HookDef | - | Hooks after agent response |
+| `on_error` | []HookDef | - | Hooks on task failure |
+| `on_claim` | []HookDef | - | Hooks on task claim |
+| `pre_close` | []HookDef | - | Hooks before task close |
+| `on_block` | []HookDef | - | Hooks when task becomes blocked |
+
+### Safety
+
+Configure safety guards:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `block_destructive` | bool | `true` | Block destructive commands |
+| `require_confirmation` | []string | - | Commands requiring confirmation |
+| `allowed_without_confirmation` | []string | - | Commands always allowed |
+
+### Memory
+
+Configure memory management:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `compact_threshold` | float | `0.70` | Context usage threshold for compaction |
+| `retention.high_dependency` | int | `90` | Retain % of high-dependency task details |
+| `retention.failed_tasks` | int | `80` | Retain % of failed task details |
+| `retention.retrospectives` | int | `100` | Retain % of retrospective details |
+
+### Coordination
+
+Configure multi-agent coordination:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | bool | `true` | Enable coordination features |
+| `lock_timeout` | duration | `1h` | File lock expiration time |
+| `conflict_detection` | bool | `true` | Enable conflict detection |
+
+### Learning
+
+Configure the learning system:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | bool | `true` | Enable learning features |
+| `retro_count` | int | `3` | Number of retrospectives to keep |
+| `patterns_file` | string | `~/.beads-global/patterns.json` | Path to patterns file |
+
+## View Current Configuration
+
+```bash
+loom config show
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Hooks Guide" icon="plug" href="/guides/hooks">
+    Learn about lifecycle hooks
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/cli-reference/overview">
+    Explore all commands
+  </Card>
+</CardGroup>

@@ -1,0 +1,53 @@
+---
+title: loom hooks
+description: Manage lifecycle hooks
+---
+
+# loom hooks
+
+Manage lifecycle hooks
+
+## Overview
+
+List, add, remove, and test lifecycle hooks.
+
+Available hook events:
+- pre-prompt: Inject context before prompt processing
+- pre-tool-call: Validate tool calls before execution
+- post-tool-call: Process tool call results
+- post-response: Create follow-ups from responses
+- on-error: Handle errors during execution
+- on-claim: Setup/linting on task claim
+- pre-close: Verify tests before closing
+- on-block: Reprioritization notification
+
+## Usage
+
+```bash
+loom hooks
+```
+
+## Examples
+
+```bash
+# Manage lifecycle hooks
+loom hooks
+```
+## See Also
+
+- [`loom claim`](/cli-reference/loom-claim) - Claim a task with file declarations
+- [`loom compact`](/cli-reference/loom-compact) - Run importance-weighted compaction
+- [`loom completion`](/cli-reference/loom-completion) - Generate the autocompletion script for the specified shell
+- [`loom config`](/cli-reference/loom-config) - Manage configuration
+- [`loom config-docs`](/cli-reference/loom-config-docs) - Generate config documentation
+- [`loom conflicts`](/cli-reference/loom-conflicts) - Detect potential conflicts
+- [`loom docs`](/cli-reference/loom-docs) - Generate CLI documentation
+- [`loom locks`](/cli-reference/loom-locks) - Show current file locks
+- [`loom mcp`](/cli-reference/loom-mcp) - Start MCP server for Claude Code
+- [`loom patterns`](/cli-reference/loom-patterns) - List learned patterns
+- [`loom ready`](/cli-reference/loom-ready) - Show prioritized ready tasks
+- [`loom retro`](/cli-reference/loom-retro) - Create and view retrospectives
+- [`loom run`](/cli-reference/loom-run) - Start the orchestrator loop
+- [`loom score`](/cli-reference/loom-score) - Show task score breakdown
+- [`loom status`](/cli-reference/loom-status) - Show context usage and stats
+- [`loom tui`](/cli-reference/loom-tui) - Launch interactive TUI dashboard

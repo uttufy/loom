@@ -1,0 +1,37 @@
+---
+title: Hooks Configuration
+description: Configure lifecycle hooks for injecting custom behavior.
+---
+
+# Hooks
+
+Configure lifecycle hooks for injecting custom behavior.
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | bool | `true` | Enable or disable hook execution |
+| `pre_prompt` | []HookDefinition | `[]` | Hooks to run before prompt processing |
+| `pre_tool_call` | []HookDefinition | `[]` | Hooks to run before tool execution |
+| `post_tool_call` | []HookDefinition | `[]` | Hooks to run after tool execution |
+| `post_response` | []HookDefinition | `[]` | Hooks to run after agent response |
+| `on_error` | []HookDefinition | `[]` | Hooks to run on task failure |
+| `on_claim` | []HookDefinition | `[]` | Hooks to run on task claim |
+| `pre_close` | []HookDefinition | `[]` | Hooks to run before task close |
+| `on_block` | []HookDefinition | `[]` | Hooks to run when task becomes blocked |
+
+## Example
+
+```yaml
+hooks:
+  enabled: true
+  pre_prompt: []
+  pre_tool_call: []
+  post_tool_call: []
+  post_response: []
+  on_error: []
+  on_claim: []
+  pre_close: []
+  on_block: []
+```

@@ -1,0 +1,50 @@
+---
+title: loom status
+description: Show context usage and stats
+---
+
+# loom status
+
+Show context usage and stats
+
+## Overview
+
+Display current orchestrator status including:
+- Context window usage
+- Compaction statistics
+- Active locks
+- Session progress
+
+## Usage
+
+```bash
+loom status
+```
+
+## Examples
+
+```bash
+# Show orchestrator status
+loom status
+
+# Output in JSON format
+loom status --json
+```
+## See Also
+
+- [`loom claim`](/cli-reference/loom-claim) - Claim a task with file declarations
+- [`loom compact`](/cli-reference/loom-compact) - Run importance-weighted compaction
+- [`loom completion`](/cli-reference/loom-completion) - Generate the autocompletion script for the specified shell
+- [`loom config`](/cli-reference/loom-config) - Manage configuration
+- [`loom config-docs`](/cli-reference/loom-config-docs) - Generate config documentation
+- [`loom conflicts`](/cli-reference/loom-conflicts) - Detect potential conflicts
+- [`loom docs`](/cli-reference/loom-docs) - Generate CLI documentation
+- [`loom hooks`](/cli-reference/loom-hooks) - Manage lifecycle hooks
+- [`loom locks`](/cli-reference/loom-locks) - Show current file locks
+- [`loom mcp`](/cli-reference/loom-mcp) - Start MCP server for Claude Code
+- [`loom patterns`](/cli-reference/loom-patterns) - List learned patterns
+- [`loom ready`](/cli-reference/loom-ready) - Show prioritized ready tasks
+- [`loom retro`](/cli-reference/loom-retro) - Create and view retrospectives
+- [`loom run`](/cli-reference/loom-run) - Start the orchestrator loop
+- [`loom score`](/cli-reference/loom-score) - Show task score breakdown
+- [`loom tui`](/cli-reference/loom-tui) - Launch interactive TUI dashboard

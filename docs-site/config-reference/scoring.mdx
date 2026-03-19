@@ -1,0 +1,29 @@
+---
+title: Scoring Configuration
+description: Configure task prioritization weights for intelligent ranking.
+---
+
+# Scoring
+
+Configure task prioritization weights for intelligent ranking.
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `blocking_multiplier` | int | `3` | Score multiplier for each blocked task (+N per blocked task) |
+| `priority_boost` | int | `2` | Score bonus for P0/P1 priority tasks |
+| `staleness_days` | int | `3` | Days before a task is considered stale |
+| `staleness_bonus` | int | `1` | Score bonus for stale tasks |
+| `failure_penalty` | int | `1` | Score penalty for previously failed tasks |
+
+## Example
+
+```yaml
+scoring:
+  blocking_multiplier: 3
+  priority_boost: 2
+  staleness_days: 3
+  staleness_bonus: 1
+  failure_penalty: 1
+```

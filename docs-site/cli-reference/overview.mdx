@@ -1,0 +1,57 @@
+---
+title: CLI Reference
+description: Complete command reference for Loom CLI
+---
+
+# CLI Reference
+
+Complete reference for all Loom CLI commands.
+
+## Global Flags
+
+| Flag | Short | Description |
+|------|-------|-------------|
+| `--config` | `-c` | Path to config file (default is `loom.yaml`) |
+| `--json` | `-j` | Output in JSON format |
+| `--help` | `-h` | Show help for any command |
+| `--version` | `-v` | Show version information |
+
+## Commands Overview
+
+### Configuration
+
+| Command | Description |
+|---------|-------------|
+| [`loom config`](/loom-config) | Manage configuration |
+| [`loom hooks`](/loom-hooks) | Manage lifecycle hooks |
+
+### Core
+
+| Command | Description |
+|---------|-------------|
+| [`loom claim`](/loom-claim) | Claim a task with file declarations |
+| [`loom ready`](/loom-ready) | Show prioritized ready tasks |
+| [`loom run`](/loom-run) | Start the orchestrator loop |
+| [`loom score`](/loom-score) | Show task score breakdown |
+
+### Coordination
+
+| Command | Description |
+|---------|-------------|
+| [`loom conflicts`](/loom-conflicts) | Detect potential conflicts |
+| [`loom locks`](/loom-locks) | Show current file locks |
+
+### Learning
+
+| Command | Description |
+|---------|-------------|
+| [`loom patterns`](/loom-patterns) | List learned patterns |
+| [`loom retro`](/loom-retro) | Create and view retrospectives |
+
+### Memory
+
+| Command | Description |
+|---------|-------------|
+| [`loom compact`](/loom-compact) | Run importance-weighted compaction |
+| [`loom status`](/loom-status) | Show context usage and stats |
+

@@ -1,0 +1,51 @@
+---
+title: loom completion fish
+description: Generate the autocompletion script for fish
+---
+
+# loom completion fish
+
+Generate the autocompletion script for fish
+
+## Overview
+
+Generate the autocompletion script for the fish shell.
+
+To load completions in your current shell session:
+
+	loom completion fish | source
+
+To load completions for every new session, execute once:
+
+	loom completion fish > ~/.config/fish/completions/loom.fish
+
+You will need to start a new shell for this setup to take effect.
+
+
+## Usage
+
+```bash
+loom completion fish [flags] [args]
+```
+
+## Arguments
+
+
+## Flags
+
+| Flag | Short | Default | Description |
+|------|-------|---------|-------------|
+| `--no-descriptions` |  | `false` | disable completion descriptions |
+
+## Examples
+
+```bash
+# Generate the autocompletion script for fish
+loom completion fish
+```
+## See Also
+
+- [`loom completion`](/cli-reference/loom-completion) - Generate the autocompletion script for the specified shell
+- [`loom completion bash`](/cli-reference/loom-completion-bash) - Generate the autocompletion script for bash
+- [`loom completion powershell`](/cli-reference/loom-completion-powershell) - Generate the autocompletion script for powershell
+- [`loom completion zsh`](/cli-reference/loom-completion-zsh) - Generate the autocompletion script for zsh

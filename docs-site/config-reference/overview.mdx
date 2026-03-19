@@ -1,0 +1,66 @@
+---
+title: Configuration Reference
+description: Complete configuration reference for Loom
+---
+
+# Configuration Reference
+
+Loom is configured via `loom.yaml` in your project directory. Run `loom config init` to create a default configuration.
+
+## Configuration File Location
+
+Loom searches for configuration in this order:
+
+1. `--config` flag value
+2. `loom.yaml` in the current directory
+3. `loom.yaml` in parent directories
+
+## Configuration Sections
+
+| Section | Description |
+|---------|-------------|
+| [Beads](/config-reference/beads) | Configure the Beads CLI integration for task management. |
+| [Scoring](/config-reference/scoring) | Configure task prioritization weights for intelligent ranking. |
+| [Hooks](/config-reference/hooks) | Configure lifecycle hooks for injecting custom behavior. |
+| [Safety](/config-reference/safety) | Configure safety guards to protect against dangerous operations. |
+| [Memory](/config-reference/memory) | Configure memory management and context compaction. |
+| [Coordination](/config-reference/coordination) | Configure multi-agent coordination for parallel work. |
+| [Learning](/config-reference/learning) | Configure the learning system for continuous improvement. |
+
+## Example Configuration
+
+```yaml
+# Beads integration
+beads:
+  path: bd
+  timeout: 30s
+
+# Scoring weights
+scoring:
+  blocking_multiplier: 3
+  priority_boost: 2
+  staleness_days: 3
+  staleness_bonus: 1
+  failure_penalty: 1
+
+# Hooks configuration
+hooks:
+  enabled: true
+
+# Safety configuration
+safety:
+  block_destructive: true
+
+# Memory management
+memory:
+  compact_threshold: 0.70
+
+# Coordination
+coordination:
+  enabled: true
+  lock_timeout: 1h
+
+# Learning
+learning:
+  enabled: true
+```

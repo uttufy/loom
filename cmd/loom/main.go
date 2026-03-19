@@ -258,4 +258,55 @@ Add to .mcp.json:
 }`,
 		RunE: startMCPServer,
 	})
+
+	// Docs command
+	docsCmd := &cobra.Command{
+		Use:   "docs [output-dir]",
+		Short: "Generate CLI documentation",
+		Long: `Generate CLI documentation in Mintlify format.
+
+The generated documentation includes:
+- Command overview page
+- Individual pages for each command
+- Usage examples and flags`,
+		RunE: generateCLIDocs,
+	}
+	rootCmd.AddCommand(docsCmd)
+
+	// Config docs command
+	configDocsCmd := &cobra.Command{
+		Use:   "config-docs [output-dir]",
+		Short: "Generate config documentation",
+		Long: `Generate configuration documentation in Mintlify format.
+
+The generated documentation includes:
+- Config overview page
+- Individual pages for each config section
+- Option tables with types and defaults`,
+		RunE: generateConfigDocs,
+	}
+	rootCmd.AddCommand(configDocsCmd)
+
+	// TUI command - Beautiful interactive terminal interface
+	tuiCmd := &cobra.Command{
+		Use:   "tui",
+		Short: "Launch interactive TUI dashboard",
+		Long: `Launch a beautiful, interactive terminal user interface for Loom.
+
+The TUI provides:
+- Visual task list with keyboard navigation
+- Real-time task prioritization and scoring
+- Interactive task claiming and management
+- File lock and pattern viewing
+- Keyboard shortcuts for all operations
+
+Keyboard shortcuts:
+  ↑/k     Move up       ↓/j     Move down
+  Enter   Claim task    s       Show score
+  d       Details       r       Refresh
+  l       View locks    p       View patterns
+  ?       Help          q       Quit`,
+		RunE: runTUI,
+	}
+	rootCmd.AddCommand(tuiCmd)
 }

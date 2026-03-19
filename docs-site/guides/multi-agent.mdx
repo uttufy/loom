@@ -1,0 +1,222 @@
+---
+title: Multi-Agent Coordination
+description: Coordinate multiple AI agents working on the same codebase
+---
+
+# Multi-Agent Coordination
+
+When multiple agents work on the same codebase, Loom provides coordination features to prevent conflicts.
+
+## Overview
+
+Multi-agent coordination prevents:
+
+- **File conflicts**: Two agents modifying the same file simultaneously
+- **Resource contention**: Multiple agents claiming the same task
+- **Merge conflicts**: Overlapping changes that are hard to reconcile
+
+## How It Works
+
+### File Locking
+
+When an agent claims a task, it can declare which files it intends to modify:
+
+```bash
+loom claim issue-42 src/auth.go src/auth_test.go
+```
+
+This creates file locks that:
+
+- Expire after a configurable timeout (default: 1 hour)
+- Are automatically released when the task completes
+- Prevent other agents from claiming conflicting work
+
+### Lock Expiration
+
+Locks have a timeout to prevent deadlocks if an agent crashes:
+
+```yaml
+coordination:
+  enabled: true
+  lock_timeout: 1h
+```
+
+Expired locks are automatically cleaned up.
+
+### Conflict Detection
+
+Loom can detect potential conflicts between agents:
+
+```bash
+loom conflicts
+```
+
+Output:
+
+```
+Detected conflicts (1):
+
+1. File: src/auth.go
+   Agent 1: agent-alpha (issue issue-42)
+   Agent 2: agent-beta (issue issue-38)
+```
+
+## Commands
+
+### View Locks
+
+```bash
+loom locks
+```
+
+Output:
+
+```
+Active file locks (2):
+
+  src/auth.go
+    Issue: issue-42 | Agent: agent-alpha
+    Claimed: 2024-01-15T10:30:00Z | Expires: 2024-01-15T11:30:00Z
+
+  src/middleware.go
+    Issue: issue-42 | Agent: agent-alpha
+    Claimed: 2024-01-15T10:30:00Z | Expires: 2024-01-15T11:30:00Z
+```
+
+### Detect Conflicts
+
+```bash
+loom conflicts
+```
+
+Analyzes current locks and reports potential conflicts.
+
+### Claim with Files
+
+```bash
+loom claim <issue-id> [files...]
+```
+
+Claim a task and optionally lock specific files.
+
+## Configuration
+
+Enable coordination in `loom.yaml`:
+
+```yaml
+coordination:
+  enabled: true           # Enable coordination features
+  lock_timeout: 1h        # Lock expiration time
+  conflict_detection: true # Enable conflict detection
+```
+
+## Workflow
+
+### Single Agent
+
+For single-agent workflows, coordination is still useful for:
+
+- Tracking which files are being modified
+- Preventing accidental concurrent modifications
+- Understanding task scope
+
+```bash
+loom claim issue-42 src/auth.go
+# Work on the task...
+loom complete issue-42  # Locks are released
+```
+
+### Multiple Agents
+
+For multi-agent workflows:
+
+1. **Agent A** claims a task with file declarations
+2. **Agent B** checks for conflicts before claiming
+3. Both agents work in parallel on non-overlapping files
+4. Locks are released as tasks complete
+
+```bash
+# Agent A
+loom claim issue-42 src/auth.go src/user.go
+
+# Agent B checks conflicts first
+loom conflicts  # Shows no conflicts with issue-42
+loom claim issue-43 src/payment.go  # Safe to claim
+```
+
+## Best Practices
+
+### 1. Declare All Files
+
+When claiming, declare all files you might modify:
+
+```bash
+# Good - comprehensive file list
+loom claim issue-42 src/auth.go src/auth_test.go src/middleware.go
+
+# Bad - missing files
+loom claim issue-42 src/auth.go
+```
+
+### 2. Check Before Claiming
+
+Always check for conflicts:
+
+```bash
+loom conflicts
+loom ready  # See what's available
+loom claim <issue> <files>
+```
+
+### 3. Release Unused Locks
+
+If you claimed files you don't need, release them:
+
+```bash
+loom release-file issue-42 src/unused.go
+```
+
+### 4. Use Appropriate Timeouts
+
+Set lock timeout based on task complexity:
+
+```yaml
+coordination:
+  lock_timeout: 2h  # For complex tasks
+```
+
+### 5. Monitor Locks
+
+Regularly check active locks:
+
+```bash
+loom locks
+loom status
+```
+
+## Conflict Resolution
+
+When conflicts are detected:
+
+1. **Communicate**: Coordinate with the other agent's owner
+2. **Prioritize**: Let the higher-priority task proceed
+3. **Split**: Divide work to avoid file overlap
+4. **Sequence**: Complete one task before starting the conflicting one
+
+## Integration with Hooks
+
+Hooks can enforce coordination policies:
+
+```go
+// pre-claim hook to check conflicts
+orch.RegisterHook(hooks.EventOnClaim, func(ctx context.Context, hc *hooks.Context) (*hooks.Result, error) {
+    conflicts := coord.DetectConflictsForFiles(hc.Files)
+    if len(conflicts) > 0 {
+        return &hooks.Result{
+            Block:  true,
+            Reason: fmt.Sprintf("Conflicts detected: %v", conflicts),
+        }, nil
+    }
+    return &hooks.Result{}, nil
+})
+```

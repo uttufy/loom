@@ -1,0 +1,27 @@
+---
+title: Memory Configuration
+description: Configure memory management and context compaction.
+---
+
+# Memory
+
+Configure memory management and context compaction.
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `compact_threshold` | float | `0.70` | Context usage threshold (0.0-1.0) to trigger compaction |
+| `retention.high_dependency` | int | `90` | Percentage of high-dependency task details to retain |
+| `retention.failed_tasks` | int | `80` | Percentage of failed task details to retain |
+| `retention.retrospectives` | int | `100` | Percentage of retrospective details to retain |
+
+## Example
+
+```yaml
+memory:
+  compact_threshold: 0.70
+  retention.high_dependency: 90
+  retention.failed_tasks: 80
+  retention.retrospectives: 100
+```

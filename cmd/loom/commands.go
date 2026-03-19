@@ -7,13 +7,16 @@ import (
 	"os"
 	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 	"github.com/uttufy/loom/internal/beadsclient"
 	"github.com/uttufy/loom/internal/config"
 	"github.com/uttufy/loom/internal/coordinator"
+	"github.com/uttufy/loom/internal/docgen"
 	"github.com/uttufy/loom/internal/orchestrator"
 	"github.com/uttufy/loom/internal/retrospective"
 	"github.com/uttufy/loom/internal/scorer"
+	"github.com/uttufy/loom/internal/tui"
 )
 
 // loadConfig loads the configuration file.
@@ -450,4 +453,65 @@ func startMCPServer(cmd *cobra.Command, args []string) error {
 	fmt.Println("Starting MCP server...")
 	// TODO: Implement MCP server
 	return fmt.Errorf("MCP server not yet implemented")
+}
+
+func generateCLIDocs(cmd *cobra.Command, args []string) error {
+	outputDir := "./docs-site/cli-reference"
+	if len(args) > 0 {
+		outputDir = args[0]
+	}
+
+	gen := docgen.NewCLIGenerator(rootCmd)
+	if err := gen.Generate(outputDir); err != nil {
+		return fmt.Errorf("failed to generate CLI docs: %w", err)
+	}
+
+	fmt.Printf("Generated CLI documentation in %s\n", outputDir)
+	return nil
+}
+
+func generateConfigDocs(cmd *cobra.Command, args []string) error {
+	outputDir := "./docs-site/config-reference"
+	if len(args) > 0 {
+		outputDir = args[0]
+	}
+
+	gen := docgen.NewConfigGenerator()
+	sections := docgen.GetDefaultSections()
+	if err := gen.Generate(outputDir, sections); err != nil {
+		return fmt.Errorf("failed to generate config docs: %w", err)
+	}
+
+	fmt.Printf("Generated config documentation in %s\n", outputDir)
+	return nil
+}
+
+func runTUI(cmd *cobra.Command, args []string) error {
+	cfg, err := loadConfig()
+	if err != nil {
+		return fmt.Errorf("failed to load config: %w", err)
+	}
+
+	client := getClient(cfg)
+	retroStore, err := retrospective.NewStore(cfg.Learning.PatternsFile)
+	if err != nil {
+		return fmt.Errorf("failed to create retro store: %w", err)
+	}
+
+	taskScorer := scorer.New(client, retroStore, &cfg.Scoring)
+
+	// Create and run TUI
+	model := tui.New(client, taskScorer, cfg)
+
+	p := tea.NewProgram(
+		model,
+		tea.WithAltScreen(),       // Use alternate screen buffer
+		tea.WithMouseCellMotion(), // Enable mouse support
+	)
+
+	if _, err := p.Run(); err != nil {
+		return fmt.Errorf("TUI error: %w", err)
+	}
+
+	return nil
 }

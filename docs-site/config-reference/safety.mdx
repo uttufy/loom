@@ -1,0 +1,25 @@
+---
+title: Safety Configuration
+description: Configure safety guards to protect against dangerous operations.
+---
+
+# Safety
+
+Configure safety guards to protect against dangerous operations.
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `block_destructive` | bool | `true` | Block destructive commands like rm -rf, git push --force |
+| `require_confirmation` | []string | `[git push, npm publish, docker push]` | Commands that require user confirmation |
+| `allowed_without_confirmation` | []string | `[git status, git diff, cat, ls]` | Commands always allowed without confirmation |
+
+## Example
+
+```yaml
+safety:
+  block_destructive: true
+  require_confirmation: [git push, npm publish, docker push]
+  allowed_without_confirmation: [git status, git diff, cat, ls]
+```

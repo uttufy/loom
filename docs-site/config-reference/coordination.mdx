@@ -1,0 +1,25 @@
+---
+title: Coordination Configuration
+description: Configure multi-agent coordination for parallel work.
+---
+
+# Coordination
+
+Configure multi-agent coordination for parallel work.
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | bool | `true` | Enable coordination features |
+| `lock_timeout` | duration | `1h` | File lock expiration time |
+| `conflict_detection` | bool | `true` | Enable conflict detection |
+
+## Example
+
+```yaml
+coordination:
+  enabled: true
+  lock_timeout: 1h
+  conflict_detection: true
+```

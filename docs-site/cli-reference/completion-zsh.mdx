@@ -1,0 +1,62 @@
+---
+title: loom completion zsh
+description: Generate the autocompletion script for zsh
+---
+
+# loom completion zsh
+
+Generate the autocompletion script for zsh
+
+## Overview
+
+Generate the autocompletion script for the zsh shell.
+
+If shell completion is not already enabled in your environment you will need
+to enable it.  You can execute the following once:
+
+	echo "autoload -U compinit; compinit" >> ~/.zshrc
+
+To load completions in your current shell session:
+
+	source <(loom completion zsh)
+
+To load completions for every new session, execute once:
+
+#### Linux:
+
+	loom completion zsh > "${fpath[1]}/_loom"
+
+#### macOS:
+
+	loom completion zsh > $(brew --prefix)/share/zsh/site-functions/_loom
+
+You will need to start a new shell for this setup to take effect.
+
+
+## Usage
+
+```bash
+loom completion zsh [flags] [args]
+```
+
+## Arguments
+
+
+## Flags
+
+| Flag | Short | Default | Description |
+|------|-------|---------|-------------|
+| `--no-descriptions` |  | `false` | disable completion descriptions |
+
+## Examples
+
+```bash
+# Generate the autocompletion script for zsh
+loom completion zsh
+```
+## See Also
+
+- [`loom completion`](/cli-reference/loom-completion) - Generate the autocompletion script for the specified shell
+- [`loom completion bash`](/cli-reference/loom-completion-bash) - Generate the autocompletion script for bash
+- [`loom completion fish`](/cli-reference/loom-completion-fish) - Generate the autocompletion script for fish
+- [`loom completion powershell`](/cli-reference/loom-completion-powershell) - Generate the autocompletion script for powershell

@@ -1,0 +1,130 @@
+---
+title: Quick Start
+description: Get started with Loom in minutes
+---
+
+# Quick Start
+
+This guide will help you run your first Loom orchestration.
+
+## Prerequisites
+
+Make sure you have completed the [Installation](/get-started/installation) guide.
+
+## 1. Check Ready Tasks
+
+View all unblocked tasks ranked by priority:
+
+```bash
+loom ready
+```
+
+Example output:
+
+```
+Found 3 ready tasks (sorted by priority):
+
+1. [issue-42] Implement authentication (score: 8)
+   Priority: P1 | Blocks: 2 | Age: 24h
+2. [issue-38] Fix login bug (score: 5)
+   Priority: P1 | Age: 48h
+3. [issue-45] Update documentation (score: 3)
+   Age: 120h
+```
+
+## 2. Understand Task Scores
+
+Get a detailed breakdown of how a task was scored:
+
+```bash
+loom score issue-42
+```
+
+Output:
+
+```
+Score breakdown for issue-42: Implement authentication
+
+Total Score: 8
+
+Components:
+  Blocking bonus:  +6 (blocks 2 tasks)
+  Priority bonus:  +2
+  Staleness bonus: +0 (stale: false)
+  Failure penalty: -0 (failed before: false)
+```
+
+## 3. Claim a Task
+
+Claim a task and declare files you'll modify:
+
+```bash
+loom claim issue-42 src/auth.go src/auth_test.go
+```
+
+Output:
+
+```
+Claimed task issue-42
+Locked files: [src/auth.go src/auth_test.go]
+```
+
+## 4. Run the Orchestrator
+
+Start the main orchestration loop:
+
+```bash
+loom run
+```
+
+The orchestrator will:
+
+1. Get ready tasks from Beads
+2. Score and prioritize them
+3. Claim the top task
+4. Execute work
+5. Close completed tasks
+6. Repeat until interrupted
+
+## 5. Check Status
+
+View current orchestrator status:
+
+```bash
+loom status
+```
+
+Output:
+
+```
+Loom Status
+  Ready tasks:     5
+  In progress:     2
+  Compact threshold: 70%
+  Hooks enabled:   true
+  Coordination:    true
+  Learning:        true
+```
+
+## Common Commands
+
+| Command | Description |
+|---------|-------------|
+| `loom run` | Start the orchestration loop |
+| `loom ready` | Show prioritized ready tasks |
+| `loom score <id>` | Show task score breakdown |
+| `loom claim <id> [files...]` | Claim a task with file declarations |
+| `loom status` | Show context usage and stats |
+| `loom locks` | Show current file locks |
+| `loom conflicts` | Detect potential conflicts |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Configuration" icon="cog" href="/get-started/configuration">
+    Customize Loom for your workflow
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/cli-reference/overview">
+    Explore all available commands
+  </Card>
+</CardGroup>

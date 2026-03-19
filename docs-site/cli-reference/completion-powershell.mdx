@@ -1,0 +1,48 @@
+---
+title: loom completion powershell
+description: Generate the autocompletion script for powershell
+---
+
+# loom completion powershell
+
+Generate the autocompletion script for powershell
+
+## Overview
+
+Generate the autocompletion script for powershell.
+
+To load completions in your current shell session:
+
+	loom completion powershell | Out-String | Invoke-Expression
+
+To load completions for every new session, add the output of the above command
+to your powershell profile.
+
+
+## Usage
+
+```bash
+loom completion powershell [flags] [args]
+```
+
+## Arguments
+
+
+## Flags
+
+| Flag | Short | Default | Description |
+|------|-------|---------|-------------|
+| `--no-descriptions` |  | `false` | disable completion descriptions |
+
+## Examples
+
+```bash
+# Generate the autocompletion script for powershell
+loom completion powershell
+```
+## See Also
+
+- [`loom completion`](/cli-reference/loom-completion) - Generate the autocompletion script for the specified shell
+- [`loom completion bash`](/cli-reference/loom-completion-bash) - Generate the autocompletion script for bash
+- [`loom completion fish`](/cli-reference/loom-completion-fish) - Generate the autocompletion script for fish
+- [`loom completion zsh`](/cli-reference/loom-completion-zsh) - Generate the autocompletion script for zsh

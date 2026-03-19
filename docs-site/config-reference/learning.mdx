@@ -1,0 +1,25 @@
+---
+title: Learning Configuration
+description: Configure the learning system for continuous improvement.
+---
+
+# Learning
+
+Configure the learning system for continuous improvement.
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | bool | `true` | Enable learning features |
+| `retro_count` | int | `3` | Number of recent retrospectives to keep |
+| `patterns_file` | string | `~/.beads-global/patterns.json` | Path to the patterns storage file |
+
+## Example
+
+```yaml
+learning:
+  enabled: true
+  retro_count: 3
+  patterns_file: ~/.beads-global/patterns.json
+```

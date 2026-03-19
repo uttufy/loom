@@ -1,0 +1,256 @@
+---
+title: Architecture
+description: System design and components of Loom
+---
+
+# Loom Architecture
+
+## System Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      Loom Orchestrator                          │
+│                                                                  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │   Scorer     │  │  Hook Engine │  │  Retros      │          │
+│  │  (Priority)  │  │  (Lifecycle) │  │  (Learning)  │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+│                                                                  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │  Coordinator │  │  Memory Mgr  │  │  Safety      │          │
+│  │  (Multi-Agt) │  │  (Compact)   │  │  (Guards)    │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           v
+┌─────────────────────────────────────────────────────────────────┐
+│                    Beads (bd) Layer                             │
+│                                                                  │
+│   bd ready, create, update, close, dep, show, compact...        │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           v
+┌─────────────────────────────────────────────────────────────────┐
+│                    Dolt Database                                │
+│                    (.beads/dolt/)                               │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Core Components
+
+### 1. Orchestrator
+
+The main loop that drives the orchestration:
+
+1. Gets ready tasks from Beads
+2. Scores and ranks them
+3. Claims the top task
+4. Delegates work to agents
+5. Closes completed tasks
+6. Repeats until interrupted
+
+**Location**: `internal/orchestrator/orchestrator.go`
+
+### 2. Task Scorer
+
+Implements AI-driven task prioritization:
+
+```
+Score = (blocking_count × 3) + (priority_boost × 2) + staleness_bonus - failure_penalty
+```
+
+Factors considered:
+- **Blocking impact**: Tasks that unblock others
+- **Priority level**: P0/P1 tasks get boosted
+- **Staleness**: Tasks open too long
+- **Failure history**: Previously failed tasks penalized
+
+**Location**: `internal/scorer/scorer.go`
+
+### 3. Hook Engine
+
+Manages lifecycle hooks that inject behavior at key points:
+
+| Hook | When |
+|------|------|
+| `pre-prompt` | Before LLM processes prompt |
+| `pre-tool-call` | Before tool execution |
+| `post-tool-call` | After tool execution |
+| `post-response` | After agent response |
+| `on-error` | On task failure |
+| `on-claim` | On task claim |
+| `pre-close` | Before task close |
+| `on-block` | When task becomes blocked |
+
+**Location**: `internal/hooks/engine.go`
+
+### 4. Multi-Agent Coordinator
+
+Enables safe parallel work:
+
+- File-level locking
+- Conflict detection
+- Lock expiration
+- Automatic cleanup
+
+**Location**: `internal/coordinator/coordinator.go`
+
+### 5. Retrospective Store
+
+Captures learning from sessions:
+
+- Task completion/failure tracking
+- Pattern extraction
+- Global knowledge sharing
+- Failure history for scoring
+
+**Location**: `internal/retrospective/store.go`
+
+### 6. Memory Manager
+
+Intelligent context management:
+
+- Tracks context usage
+- Triggers compaction at threshold
+- Importance-weighted retention
+- Preserves critical context
+
+**Location**: `internal/memory/manager.go`
+
+### 7. Safety Guard
+
+Protects against dangerous operations:
+
+- Blocks destructive commands (rm -rf, git push --force)
+- Requires confirmation for risky operations
+- Maintains approval cache
+- Configurable patterns
+
+**Location**: `internal/safety/guard.go`
+
+### 8. Beads Client
+
+CLI wrapper for Beads commands:
+
+- `bd ready --json` - Get ready tasks
+- `bd show <id> --json` - Get task details
+- `bd update <id> --claim` - Claim task
+- `bd close <id>` - Close task
+- `bd compact` - Run compaction
+
+**Location**: `internal/beadsclient/client.go`
+
+## Data Flow
+
+```
+1. Get Ready Tasks
+   ┌──────────────┐
+   │ bd ready     │
+   │ --json       │
+   └──────┬───────┘
+          │
+          v
+2. Score & Rank
+   ┌──────────────┐
+   │ TaskScorer   │
+   │ .Rank()      │
+   └──────┬───────┘
+          │
+          v
+3. Execute Hooks
+   ┌──────────────┐
+   │ pre-prompt   │
+   │ on-claim     │
+   └──────┬───────┘
+          │
+          v
+4. Claim Task
+   ┌──────────────┐
+   │ bd update    │
+   │ --claim      │
+   └──────┬───────┘
+          │
+          v
+5. Execute Work
+   ┌──────────────┐
+   │ (Agent)      │
+   └──────┬───────┘
+          │
+          v
+6. Close Task
+   ┌──────────────┐
+   │ pre-close    │
+   │ bd close     │
+   │ post-response│
+   └──────────────┘
+```
+
+## Package Structure
+
+```
+loom/
+├── cmd/loom/           # CLI entry point
+├── internal/
+│   ├── orchestrator/   # Core loop
+│   ├── scorer/         # Task prioritization
+│   ├── hooks/          # Lifecycle hooks
+│   ├── coordinator/    # Multi-agent coordination
+│   ├── retrospective/  # Learning system
+│   ├── memory/         # Context management
+│   ├── safety/         # Safety guards
+│   ├── beadsclient/    # Beads CLI wrapper
+│   └── config/         # Configuration
+├── pkg/api/            # Public API
+└── docs/               # Documentation
+```
+
+## Extension Points
+
+### Adding Custom Hooks
+
+```go
+orch.RegisterHook(hooks.EventPreToolCall, func(ctx context.Context, hc *hooks.Context) (*hooks.Result, error) {
+    // Custom validation logic
+    if isDangerous(hc.ToolCall.Command) {
+        return &hooks.Result{Block: true, Reason: "dangerous command"}, nil
+    }
+    return &hooks.Result{}, nil
+})
+```
+
+### Custom Scoring Factors
+
+```go
+type CustomScorer struct {
+    *scorer.Scorer
+}
+
+func (s *CustomScorer) ScoreTask(ctx context.Context, issue *beadsclient.Issue) (int, error) {
+    score, err := s.Scorer.ScoreTask(ctx, issue)
+    if err != nil {
+        return 0, err
+    }
+
+    // Add custom factor
+    if hasLabel(issue, "urgent") {
+        score += 5
+    }
+
+    return score, nil
+}
+```
+
+## Integration with Beads
+
+Loom requires [Beads (bd)](https://github.com/uttufy/beads) to be installed and configured:
+
+```bash
+# Install beads
+go install github.com/uttufy/beads/cmd/bd@latest
+
+# Initialize in your project
+cd your-project
+bd init
+```
+
+Loom then uses the Beads CLI for all task operations.

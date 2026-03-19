@@ -1,0 +1,60 @@
+---
+title: loom completion bash
+description: Generate the autocompletion script for bash
+---
+
+# loom completion bash
+
+Generate the autocompletion script for bash
+
+## Overview
+
+Generate the autocompletion script for the bash shell.
+
+This script depends on the 'bash-completion' package.
+If it is not installed already, you can install it via your OS's package manager.
+
+To load completions in your current shell session:
+
+	source <(loom completion bash)
+
+To load completions for every new session, execute once:
+
+#### Linux:
+
+	loom completion bash > /etc/bash_completion.d/loom
+
+#### macOS:
+
+	loom completion bash > $(brew --prefix)/etc/bash_completion.d/loom
+
+You will need to start a new shell for this setup to take effect.
+
+
+## Usage
+
+```bash
+loom completion bash [flags] [args]
+```
+
+## Arguments
+
+
+## Flags
+
+| Flag | Short | Default | Description |
+|------|-------|---------|-------------|
+| `--no-descriptions` |  | `false` | disable completion descriptions |
+
+## Examples
+
+```bash
+# Generate the autocompletion script for bash
+loom completion bash
+```
+## See Also
+
+- [`loom completion`](/cli-reference/loom-completion) - Generate the autocompletion script for the specified shell
+- [`loom completion fish`](/cli-reference/loom-completion-fish) - Generate the autocompletion script for fish
+- [`loom completion powershell`](/cli-reference/loom-completion-powershell) - Generate the autocompletion script for powershell
+- [`loom completion zsh`](/cli-reference/loom-completion-zsh) - Generate the autocompletion script for zsh
