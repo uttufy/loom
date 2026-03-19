@@ -14,7 +14,14 @@
 
 ---
 
-Loom is an orchestration layer built on top of [Beads (bd)](https://github.com/uttufy/beads) that enhances AI coding agents with intelligent task prioritization, lifecycle hooks, multi-agent coordination, and learning capabilities.
+Loom is an orchestration layer built on top of [Beads (bd)](https://github.com/steveyegge/beads/tree/main) that enhances AI coding agents with intelligent task prioritization, lifecycle hooks, multi-agent coordination, and learning capabilities.
+
+## Prerequisites
+
+Before installing Loom, ensure you have the following dependencies installed:
+
+1. **[Beads (bd)](https://github.com/steveyegge/beads/tree/main)** - Distributed graph-based issue tracker for AI agents
+2. **[Dolt](https://github.com/dolthub/dolt)** - Version-controlled SQL database (required by Beads)
 
 ## Features
 
@@ -98,6 +105,10 @@ learning:
 - [API Reference](./docs/API.md) - Public API documentation
 - [Hooks](./docs/HOOKS.md) - Hook system details
 - [MCP Integration](./docs/MCP.md) - Claude Code integration
+
+## Credits
+
+Loom is built on top of [Beads](https://github.com/steveyegge/beads/tree/main) by [Steve Yegge](https://github.com/steveyegge). Beads provides the distributed graph-based issue tracking foundation that makes AI agent coordination possible.
 
 ## License
 
