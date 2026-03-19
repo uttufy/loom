@@ -1,6 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "Loom",
+  "theme": "maple",
   "logo": {
     "dark": "/img/logo-dark.svg",
     "light": "/img/logo-light.svg"
