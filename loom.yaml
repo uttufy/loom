@@ -1,0 +1,66 @@
+# loom.yaml - Loom configuration
+
+# Beads integration
+beads:
+  path: bd                    # Path to bd executable
+  timeout: 30s                # Command timeout
+
+# Scoring weights
+scoring:
+  blocking_multiplier: 3      # +N per blocked task (default: 3)
+  priority_boost: 2           # +N for P0/P1 tasks (default: 2)
+  staleness_days: 3           # Days before staleness bonus (default: 3)
+  staleness_bonus: 1          # +N for stale tasks (default: 1)
+  failure_penalty: 1          # -N for previously failed (default: 1)
+
+# Hook configuration
+hooks:
+  enabled: true
+  pre_prompt:                 # Hooks to run before prompt
+    - name: inject-context
+      builtin: context-injector
+  pre_tool_call:
+    - name: safety-check
+      builtin: safety-guard
+  post_tool_call:
+    - name: truncate-output
+      builtin: output-truncator
+  post_response:
+    - name: create-followups
+      builtin: followup-creator
+  on_error:
+    - name: log-failure
+      builtin: error-logger
+
+# Safety configuration
+safety:
+  block_destructive: true     # Block rm -rf, git push --force, etc.
+  require_confirmation:       # Commands requiring user confirmation
+    - "git push"
+    - "npm publish"
+    - "docker push"
+  allowed_without_confirmation:
+    - "git status"
+    - "git diff"
+    - "cat"
+    - "ls"
+
+# Memory management
+memory:
+  compact_threshold: 0.70     # Compact when context > 70%
+  retention:
+    high_dependency: 90       # Keep 90% of high-dependency task details
+    failed_tasks: 80          # Keep 80% of failed task details
+    retrospectives: 100       # Keep all retrospective details
+
+# Coordination
+coordination:
+  enabled: true
+  lock_timeout: 1h            # File lock expiration
+  conflict_detection: true    # Detect potential conflicts
+
+# Learning
+learning:
+  enabled: true
+  retro_count: 3              # Number of retros to load on start
+  patterns_file: ~/.beads-global/patterns.json

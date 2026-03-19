@@ -1,0 +1,302 @@
+# Loom Hooks
+
+Hooks allow you to inject custom behavior at key points in the orchestration lifecycle.
+
+## Hook Events
+
+| Event | When | Purpose |
+|-------|------|---------|
+| `pre-prompt` | Before LLM processes prompt | Inject context, coding standards |
+| `pre-tool-call` | Before tool execution | Validate, block dangerous commands |
+| `post-tool-call` | After tool execution | Process output, attach to bead |
+| `post-response` | After agent response | Create follow-ups, extract TODOs |
+| `on-error` | On task failure | Log failure, attempt recovery |
+| `on-claim` | On task claim | Run setup, linting |
+| `pre-close` | Before task close | Verify tests, check requirements |
+| `on-block` | When task becomes blocked | Notify, reprioritize |
+
+## Hook Context
+
+Each hook receives a `Context` with relevant data:
+
+```go
+type Context struct {
+    Event    Event           // Which hook fired
+    IssueID  string          // Current task
+    AgentID  string          // Agent identifier
+    ToolCall *ToolCall       // For tool-related hooks
+    Response string          // For post-response
+    Error    error           // For on-error
+    Metadata map[string]any  // Additional data
+}
+```
+
+## Hook Result
+
+Hooks return a `Result` to control flow:
+
+```go
+type Result struct {
+    Block      bool           // Stop execution
+    Reason     string         // Why blocked
+    Modified   bool           // Context was modified
+    NewContext string         // Replacement context
+    Data       map[string]any // Additional output
+}
+```
+
+## Registering Hooks
+
+### Using the API
+
+```go
+loom.RegisterHook(hooks.EventPreToolCall, myValidationHook)
+
+func myValidationHook(ctx context.Context, hc *hooks.Context) (*hooks.Result, error) {
+    if hc.ToolCall.Name == "bash" {
+        if strings.Contains(hc.ToolCall.Command, "rm -rf") {
+            return &hooks.Result{
+                Block:  true,
+                Reason: "destructive command blocked",
+            }, nil
+        }
+    }
+    return &hooks.Result{}, nil
+}
+```
+
+### Using Configuration
+
+```yaml
+hooks:
+  enabled: true
+  pre_prompt:
+    - name: inject-context
+      script: .loom/hooks/context.sh
+  pre_tool_call:
+    - name: safety-check
+      builtin: safety-guard
+```
+
+## Built-in Hooks
+
+### safety-guard
+
+Blocks destructive commands:
+
+- `rm -rf`
+- `git push --force`
+- `git reset --hard`
+- SQL DROP/TRUNCATE/DELETE
+
+```yaml
+hooks:
+  pre_tool_call:
+    - name: safety-check
+      builtin: safety-guard
+```
+
+### context-injector
+
+Injects repository context:
+
+- Project structure
+- Recent file changes
+- Related beads
+- Coding standards
+
+```yaml
+hooks:
+  pre_prompt:
+    - name: inject-context
+      builtin: context-injector
+```
+
+### output-truncator
+
+Truncates large tool outputs:
+
+- Limits output size
+- Preserves key snippets
+- Attaches summary to bead
+
+```yaml
+hooks:
+  post_tool_call:
+    - name: truncate-output
+      builtin: output-truncator
+```
+
+### followup-creator
+
+Creates follow-up tasks:
+
+- Extracts TODOs from response
+- Detects unfinished work
+- Creates linked beads
+
+```yaml
+hooks:
+  post_response:
+    - name: create-followups
+      builtin: followup-creator
+```
+
+### error-logger
+
+Logs failures for learning:
+
+- Records to audit trail
+- Updates failure count
+- Triggers recovery if enabled
+
+```yaml
+hooks:
+  on_error:
+    - name: log-failure
+      builtin: error-logger
+```
+
+## Custom Script Hooks
+
+Hook scripts receive JSON on stdin and return JSON on stdout:
+
+### Input
+
+```json
+{
+  "event": "pre-tool-call",
+  "issue_id": "issue-123",
+  "agent_id": "my-agent",
+  "tool_call": {
+    "name": "bash",
+    "command": "rm -rf /tmp/*"
+  }
+}
+```
+
+### Output
+
+```json
+{
+  "block": false,
+  "modified": true,
+  "new_context": "Additional context here",
+  "data": {
+    "key": "value"
+  }
+}
+```
+
+### Example Script
+
+```bash
+#!/bin/bash
+# .loom/hooks/validate.sh
+
+# Read input
+input=$(cat)
+event=$(echo "$input" | jq -r '.event')
+
+# Validate
+if [ "$event" = "pre-tool-call" ]; then
+    command=$(echo "$input" | jq -r '.tool_call.command')
+    if echo "$command" | grep -q "production"; then
+        # Block production access
+        echo '{"block": true, "reason": "production access not allowed"}'
+        exit 0
+    fi
+fi
+
+# Allow
+echo '{"block": false}'
+```
+
+## Hook Execution Order
+
+Hooks execute in registration order. If any hook returns `Block: true`, execution stops:
+
+```
+Hook 1 -> Hook 2 -> Hook 3 (blocked) -> STOP
+                                    ↓
+                              Return blocked result
+```
+
+## Best Practices
+
+### 1. Keep Hooks Fast
+
+Hooks run synchronously. Avoid long-running operations.
+
+```go
+// Bad
+func slowHook(ctx context.Context, hc *hooks.Context) (*hooks.Result, error) {
+    time.Sleep(5 * time.Second) // Blocks orchestration
+    return &hooks.Result{}, nil
+}
+
+// Good
+func fastHook(ctx context.Context, hc *hooks.Context) (*hooks.Result, error) {
+    // Quick validation
+    return &hooks.Result{}, nil
+}
+```
+
+### 2. Use Specific Events
+
+Register for only the events you need:
+
+```go
+// Only validate tool calls
+orch.RegisterHook(hooks.EventPreToolCall, validateHook)
+```
+
+### 3. Provide Clear Reasons
+
+When blocking, explain why:
+
+```go
+return &hooks.Result{
+    Block:  true,
+    Reason: "Cannot push to main branch. Use a feature branch.",
+}, nil
+```
+
+### 4. Log for Debugging
+
+Log hook execution for troubleshooting:
+
+```go
+func myHook(ctx context.Context, hc *hooks.Context) (*hooks.Result, error) {
+    log.Printf("Hook %s fired for issue %s", hc.Event, hc.IssueID)
+    // ...
+}
+```
+
+### 5. Handle Errors Gracefully
+
+Don't crash the orchestrator on errors:
+
+```go
+func resilientHook(ctx context.Context, hc *hooks.Context) (*hooks.Result, error) {
+    // Recover from panics
+    defer func() {
+        if r := recover(); r != nil {
+            log.Printf("Hook panic: %v", r)
+        }
+    }()
+
+    // Safe operation
+    return &hooks.Result{}, nil
+}
+```
+
+## Testing Hooks
+
+```bash
+# Test a specific hook event
+loom hooks test pre-tool-call
+
+# With custom input
+echo '{"tool_call":{"command":"rm -rf /"}}' | loom hooks test pre-tool-call
+```
